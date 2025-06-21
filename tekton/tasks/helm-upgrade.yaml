@@ -1,0 +1,18 @@
+apiVersion: tekton.dev/v1
+kind: Task
+metadata:
+  name: helm-upgrade
+spec:
+  params:
+    - name: IMAGE_TAG
+    - name: CHART_PATH
+      default: ./helm/my-app-chart
+    - name: RELEASE_NAME
+      default: my-app
+  steps:
+    - name: upgrade
+      image: alpine/helm:3.12.3
+      script: |
+        #!/bin/sh
+        helm upgrade --install $(params.RELEASE_NAME) $(params.CHART_PATH) \
+          --set image.tag=$(params.IMAGE_TAG)

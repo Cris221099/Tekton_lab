@@ -1,0 +1,23 @@
+apiVersion: tekton.dev/v1
+kind: Pipeline
+metadata:
+  name: build-and-deploy-pipeline
+spec:
+  params:
+    - name: image
+    - name: imageTag
+  tasks:
+    - name: build-push-image
+      taskRef:
+        name: build-and-push
+      params:
+        - name: IMAGE
+          value: $(params.image):$(params.imageTag)
+
+    - name: helm-upgrade
+      runAfter: [build-push-image]
+      taskRef:
+        name: helm-upgrade
+      params:
+        - name: IMAGE_TAG
+          value: $(params.imageTag)

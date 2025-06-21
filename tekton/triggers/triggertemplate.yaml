@@ -1,0 +1,25 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: build-and-deploy-template
+spec:
+  params:
+    - name: imageTag
+      default: "v2"
+    - name: image
+      default: cris221099/tekton-node-app
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1
+      kind: PipelineRun
+      metadata:
+        generateName: build-and-deploy-run-
+      spec:
+        serviceAccountName: tekton-bot       # <-- aquí agregas el ServiceAccount correcto
+        pipelineRef:
+          name: build-and-deploy-pipeline
+        params:
+          - name: image
+            value: $(params.image)
+          - name: imageTag
+            value: $(params.imageTag)
+        # workspaces: []                    # Si no usas workspaces, puedes omitir esta línea
